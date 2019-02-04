@@ -6,6 +6,7 @@
 package javahibernate;
 
 import controller.Manager;
+import exceptions.VeterinariaException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,12 +21,14 @@ public class JavaHibernate {
     private static BufferedReader br;
     private static Manager manager;
     private static Usuarios usuarioLogueado;
+    private static Usuarios admin;
   
     
     public static void main(String[] args) {
        
         //tipos usuario: 
-        //creación de un usuario administrador
+        //creación de un usuario administrador para empezar a usar la aplicación
+        //cuando en la base de datos no hay administradores dados de alta
         Usuarios admin = new Usuarios();
         admin.setNombre("admin");
         admin.setPass("admin");
@@ -33,10 +36,11 @@ public class JavaHibernate {
         
         manager = Manager.getInstance();
         try {
-            int option;
+            int option = 0;
             do {
+               try{
                 System.out.println("*** Clinica Veterinaria STUCOM ***");
-                System.out.println("1. Iniciar sesion (TEST: admin, admin)");
+                System.out.println("1. Iniciar sesion (TEST USE: admin, admin)");
                 System.out.println("0. Salir");
                 option = askInt("Opciones:");
                 
@@ -50,29 +54,47 @@ public class JavaHibernate {
                     default:
                         System.out.println("Opcion incorrecta!");
                 }
+               }catch(VeterinariaException e){
+                   System.out.println(e);
+               }
             } while (option != 0);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
     
-   public static void login() {
-      boolean exit = false;
-      do{
+   /**
+    * Login: se pide un nº de matricula (el id del que se loguea) y su pass
+    * Luego se evalua en base de datos si es correcto para permitir producir el logueo
+    */
+   public static void login() throws VeterinariaException {
+     
        String matricula = askString("Introduce matricula:");
        String pass = askString("introduce password:");
        if(matricula.equals("admin") && pass.equals("admin")){
-           exit = true;
+           usuarioLogueado = admin;
+           showMenu3();
        }
-       if(manager.checkLogin(matricula, pass)){ 
-           exit = true;   
+       usuarioLogueado = manager.checkLogin(matricula, pass); 
+       switch(usuarioLogueado.getTipoUsuario()){
+           
+           case 1:
+               showMenu1();
+               break;
+           case 2:
+               showMenu2();
+               break;
+           case 3:
+               showMenu3();
+               break;
+           default:
+               throw new VeterinariaException(VeterinariaException.WRONG_TYPE);
+      
        }
-       else{
-           System.out.println("Matricula o pass inválidos/no corresponden a nadie");
-       }
-      }
-      while(!exit);
-   }
+    }
+      
+      
+   
     
     private static void menu1(){
         try {
