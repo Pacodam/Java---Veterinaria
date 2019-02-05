@@ -105,6 +105,12 @@ public class JavaHibernate {
         //int dni = askInt("DNI (sin letra, solo los numeros)");
         String matricula = askString("Matricula asignada (use tres cifras, ej: 298");
         String password = askString("Password asignado:");
+        /*
+        chequear:
+        Que no haya un usuario con esa matricula, hay que traerse todas las matriculas
+        Que el dni sea correcto (y luego añadir la letra, claro)
+        
+        */
     }
    
     
@@ -204,7 +210,7 @@ public class JavaHibernate {
                         altaUsuario();
                         break;
                      case 7:
-                        //editarUsuario();
+                        //editarUsuario(); //checkUsuario
                         break;
                      case 8:
                         //bajaUsuario();
