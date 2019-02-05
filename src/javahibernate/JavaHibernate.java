@@ -5,6 +5,7 @@
  */
 package javahibernate;
 
+import com.sun.xml.internal.bind.v2.runtime.output.SAXOutput;
 import controller.Manager;
 import exceptions.VeterinariaException;
 import java.io.BufferedReader;
@@ -31,6 +32,7 @@ public class JavaHibernate {
         //cuando en la base de datos no hay administradores dados de alta
         Usuarios admin = new Usuarios();
         admin.setNombre("admin");
+        admin.setMatricula("admin");
         admin.setPass("admin");
         admin.setTipoUsuario(3);
         
@@ -76,16 +78,18 @@ public class JavaHibernate {
            showMenu3();
        }
        usuarioLogueado = manager.checkLogin(matricula, pass); 
+       System.out.println("Bienvenido, " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidos());
+       System.out.println("\n");
+       
        switch(usuarioLogueado.getTipoUsuario()){
-           
            case 1:
-               showMenu1();
+               menu1();
                break;
            case 2:
-               showMenu2();
+               menu2();
                break;
            case 3:
-               showMenu3();
+               menu3();
                break;
            default:
                throw new VeterinariaException(VeterinariaException.WRONG_TYPE);
@@ -93,14 +97,24 @@ public class JavaHibernate {
        }
     }
       
-      
+    public static void altaUsuario(){
+        System.out.println("*** ALTA NUEVO USUARIO ***");
+        System.out.println("Nombre usuario:");
+        String nombre = askString("Nombre usuario");
+        String apellidos = askString("Apellidos:");
+        //int dni = askInt("DNI (sin letra, solo los numeros)");
+        String matricula = askString("Matricula asignada (use tres cifras, ej: 298");
+        String password = askString("Password asignado:");
+    }
    
     
     private static void menu1(){
         try {
+           
             int option;
             do {
-                option = askInt("Opciones");
+                 showMenu1();
+                option = askInt("Elige opcion:");
                 switch (option) {
                     case 1:
                         //consultaExpedientes();
@@ -128,7 +142,8 @@ public class JavaHibernate {
          try {
             int option;
             do {
-                option = askInt("Opciones");
+                showMenu2();
+                option = askInt("Elige opcion:");
                 switch (option) {
                     case 1:
                         //consultaExpedientes();
@@ -167,7 +182,8 @@ public class JavaHibernate {
         try {
             int option;
             do {
-                option = askInt("Opciones");
+                showMenu3();
+                option = askInt("Elige opcion:");
                 switch (option) {
                     case 1:
                         //consultaExpedientes();
@@ -185,7 +201,7 @@ public class JavaHibernate {
                         //consultaUsuarios();
                         break;
                     case 6:
-                        //altaUsuario();
+                        altaUsuario();
                         break;
                      case 7:
                         //editarUsuario();

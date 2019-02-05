@@ -17,7 +17,7 @@ public class VeterinariaException extends Exception{
     public static final int INCORRECT_NUM_ARGS = 0;
 	    public static final int WRONG_LOGIN = 1;
 	    public static final int WRONG_TYPE = 2;
-	    public static final int WRONG_SKILL = 3;
+	    public static final int NO_SUCH_USER = 3;
 	    public static final int WITHOUT_SKILLS = 4;
 	    public static final int DNI_INCORRECT_SIZE = 5;
 	    public static final int DNI_INCORRECT_NUM = 6;
@@ -39,7 +39,7 @@ public class VeterinariaException extends Exception{
 	    private final List<String> messages = Arrays.asList(
 	            "<ERROR 001 : Matricula o pass inválidos/no corresponden a nadie>",
 	            "<ERROR 002 : Identificador para tipo usuario no reconocido. Solo 1,2,3 se admiten. Revise base de datos.>",
-	            "<ERROR 003 : This service is not offered in any room>",
+	            "<ERROR 003 : No hay ningun usuario que corresponda a esa matricula y password. Asegurese e intente de nuevo>",
 	            "<ERROR 004 : Skill for worker not recognized>",
 	            "<ERROR 005 : This worker has no skills>",
 	            "<ERROR 006 : Problem with DNI: incorrect size>",

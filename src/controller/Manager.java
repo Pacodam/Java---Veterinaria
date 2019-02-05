@@ -2,6 +2,7 @@
 package controller;
 
 
+import exceptions.VeterinariaException;
 import model.Usuarios;
 import persistence.HibernateQueries;
 
@@ -18,7 +19,8 @@ public class Manager {
 	private static final Manager instance = new Manager();
 	public static Manager getInstance() { return instance; }
         
-        public Usuarios checkLogin(String matricula, String password){
+        
+        public Usuarios checkLogin(String matricula, String password) throws VeterinariaException{
            Usuarios user = HibernateQueries.getUser(matricula, password);
             return user;
         }
