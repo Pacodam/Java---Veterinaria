@@ -11,6 +11,7 @@ import model.Usuarios;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 
@@ -34,18 +35,47 @@ public class HibernateQueries {
          }
          return lista.get(0);
      }
-    /*
-     public static Usuarios getUser(String matricula, String password){
+   
+     
+     public static void altaUsuario(Usuarios usuario)  {
+         
+        Session sesion = HibernateUtil.createSessionFactory().openSession();
+        Transaction tx = sesion.beginTransaction();
+        sesion.save(usuario);//LO PREPARA PARA PERSISTENCIA, PERO AÚN NO GUARDA
+        tx.commit();//CONFIRMA EN BBDD TODO LO QUE ESTÁ EN LA SESIÓN DESDE EL COMIENZO DE LA TRANSACCION
+        sesion.close();
+
+     }
+     
+     public static void borrarUsuario(Usuarios usuario) {
+        
+        Session sesion = HibernateUtil.createSessionFactory().openSession();
+        Transaction tx = sesion.beginTransaction();
+        sesion.delete(usuario);
+        tx.commit();
+        sesion.close();
+    }
+    
+    public static void updateUsuario(Usuarios usuario) {
+        
+        Session sesion = HibernateUtil.createSessionFactory().openSession();
+        Transaction tx = sesion.beginTransaction();
+        sesion.update(usuario);
+        tx.commit();
+        sesion.close();
+    }
+    
+    public static List<Usuarios> getUsers() throws VeterinariaException{
          
          Session sesion = HibernateUtil.createSessionFactory().openSession();
-         String query = "FROM usuarios WHERE matricula = " + matricula + " and pass = "+ password;
-         Query q = sesion.createQuery(query);
-         List<Usuarios> listaUsuarios =  q.list();
-         for(Usuarios u: listaUsuarios){
-             Usuarios user = (Usuarios) u;
-             System.out.println(user.getNombre());
+         Criteria crit = sesion.createCriteria(Usuarios.class);
+         List<Usuarios> lista = crit.list();
+         sesion.close();
+         if(lista.isEmpty()){
+             throw new VeterinariaException(VeterinariaException.NO_SUCH_USER);
          }
-         return null;
+         return lista;
      }
-     */
+
+     
 }

@@ -5,6 +5,7 @@
         <group>
             <file>file:/C:/Users/alu2017454/Documents/NetBeansProjects/javaHibernate/src/javahibernate/JavaHibernate.java</file>
             <file>file:/C:/Users/alu2017454/Documents/NetBeansProjects/javaHibernate/src/persistence/HibernateQueries.java</file>
+            <file>file:/C:/Users/alu2017454/Documents/NetBeansProjects/javaHibernate/src/exceptions/VeterinariaException.java</file>
             <file>file:/C:/Users/alu2017454/Documents/NetBeansProjects/javaHibernate/src/model/Usuarios.java</file>
             <file>file:/C:/Users/alu2017454/Documents/NetBeansProjects/javaHibernate/src/controller/Manager.java</file>
         </group>

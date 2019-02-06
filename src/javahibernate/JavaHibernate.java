@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import model.Usuarios;
+import java.util.Date;
 
 /**
  *
@@ -23,6 +24,7 @@ public class JavaHibernate {
     private static Manager manager;
     private static Usuarios usuarioLogueado;
     private static Usuarios admin;
+    private static Date date;
   
     
     public static void main(String[] args) {
@@ -75,7 +77,7 @@ public class JavaHibernate {
        String pass = askString("introduce password:");
        if(matricula.equals("admin") && pass.equals("admin")){
            usuarioLogueado = admin;
-           showMenu3();
+           menu3();
        }
        usuarioLogueado = manager.checkLogin(matricula, pass); 
        System.out.println("Bienvenido, " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidos());
@@ -93,18 +95,88 @@ public class JavaHibernate {
                break;
            default:
                throw new VeterinariaException(VeterinariaException.WRONG_TYPE);
-      
        }
     }
+   
+   public static void consultaUsuarios() throws VeterinariaException{
+       
+       System.out.println("***  USUARIOS EN EL SISTEMA ***\n");
+       System.out.println(manager.consultaUsuarios);
+       
+   }
+   
+   public static void editarUsuario() throws VeterinariaException, IOException{
+       
+       System.out.println("***  EDICION USUARIO ***\n");
+       
+       String matricula = askString("Introduce matricula:");
+       String password = askString("Introduce password:");
+       Usuarios usuarioModificar = manager.checkLogin(matricula, password);
+       boolean exit = false;
+       int option;
+       String nuevoNombre;
+       String nuevoApellido;
+       String nuevoPass;
+       do{
+         edicionOpcionesMenu(usuarioModificar);
+            option = askInt("Elige opcion:");
+            switch (option) {
+                       case 1:
+                           nuevoNombre = askString("Nuevo nombre:");
+                           usuarioModificar.setNombre(nuevoNombre);
+                           break;
+                       case 2:
+                           nuevoApellido = askString("Nuevo apellido");
+                           usuarioModificar.setApellidos(nuevoApellido);
+                       case 3:
+                           nuevoPass = askString("Nuevo pass:");
+                           String nuevoPassConf = askString("Confirma pass:");
+                           usuarioModificar.setPass(nuevoPass);
+                       case 0:
+                           break;
+                       default:
+                           System.out.println("Opcion incorrecta!");
+                   }   
+       }while(option != 0);
+       
+       manager.updateUsuario(usuarioModificar);
+       System.out.println("Usuario actualizado");
+       
+   }
+   
+   private static void edicionOpcionesMenu(Usuarios u){
+        System.out.println("*** Selecciona que modificar: ***");
+        System.out.println("1. Nombre ("+ u.getNombre()+")");
+        System.out.println("2. Apellidos (" + u.getApellidos()+")");
+        System.out.println("3. Password (" + u.getPass()+")");
+        System.out.println("0. Salir");
+    }
+   
+   public static void bajaUsuario() throws VeterinariaException{
+       
+       System.out.println("*** BAJA DE USUARIO ***\n");
+       String matricula = askString("Introduce matricula:");
+       String password = askString("Introduce password:");
+       Usuarios usuarioBorrar = manager.checkLogin(matricula, password);
+       manager.borrarUsuario(usuarioBorrar);
+       System.out.println("Usuario eliminado");
+   }
+   
+   
       
-    public static void altaUsuario(){
-        System.out.println("*** ALTA NUEVO USUARIO ***");
-        System.out.println("Nombre usuario:");
+    public static void altaUsuario() throws VeterinariaException, IOException{
+        System.out.println("*** ALTA NUEVO USUARIO ***\n");
         String nombre = askString("Nombre usuario");
         String apellidos = askString("Apellidos:");
-        //int dni = askInt("DNI (sin letra, solo los numeros)");
+        String dni = checkDNI(askString("DNI (sin letra, solo los numeros)"));
         String matricula = askString("Matricula asignada (use tres cifras, ej: 298");
         String password = askString("Password asignado:");
+        String passwordConf = askString("confirme password:");
+        int tipoUsuario = askInt("Tipo usuario: 1: auxiliar/ 2: veterinario / 3: admin");
+        
+        Usuarios nuevoUsuario = new Usuarios(nombre, apellidos, dni, matricula, password, tipoUsuario, null, null);
+        manager.altaUsuario(nuevoUsuario);
+        System.out.println("Nuevo usuario dado de alta en el sistema");
         /*
         chequear:
         Que no haya un usuario con esa matricula, hay que traerse todas las matriculas
@@ -113,6 +185,25 @@ public class JavaHibernate {
         */
     }
    
+    public static String checkDNI(String dn) throws VeterinariaException  {
+    	int dni;
+    	try {
+    		dni = Integer.parseInt(dn);
+      	    if(dn.length() != 8) {
+      		  throw new VeterinariaException(VeterinariaException.DNI_INCORRECT_SIZE);
+      	    }
+      	}catch(NumberFormatException e) {
+      		throw new VeterinariaException(VeterinariaException.DNI_INCORRECT_NUM);
+      	}
+    	return getDNIfull(dn);	
+    }
+    
+     public static String getDNIfull(String dni) {
+        String characters="TRWAGMYFPDXBNJZSQVHLCKE";
+        int modulo= Integer.parseInt(dni) % 23;
+        char letra = characters.charAt(modulo);
+        return dni + letra; 
+        } 
     
     private static void menu1(){
         try {
@@ -184,7 +275,7 @@ public class JavaHibernate {
         System.out.println("0. Cerrar sesion");
     }
     
-     private static void menu3(){
+     private static void menu3() {
         try {
             int option;
             do {
@@ -204,16 +295,16 @@ public class JavaHibernate {
                         //bajaExpediente();
                         break;
                     case 5:
-                        //consultaUsuarios();
+                        consultaUsuarios();
                         break;
                     case 6:
                         altaUsuario();
                         break;
                      case 7:
-                        //editarUsuario(); //checkUsuario
+                        editarUsuario(); 
                         break;
                      case 8:
-                        //bajaUsuario();
+                        bajaUsuario();
                         break;
                     case 0:
                         System.out.println("Hasta pronto...");
@@ -222,7 +313,7 @@ public class JavaHibernate {
                         System.out.println("Opcion incorrecta!");
                 }
             } while (option != 0);
-        } catch (IOException ex) {
+        } catch (IOException | VeterinariaException ex ) {
             System.out.println(ex.getMessage());
         }
     }
@@ -289,5 +380,6 @@ public class JavaHibernate {
         return answer;
     }
 
+   
     
 }

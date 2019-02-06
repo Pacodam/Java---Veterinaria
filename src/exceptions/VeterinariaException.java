@@ -14,12 +14,12 @@ import java.util.List;
  */
 public class VeterinariaException extends Exception{
     
-    public static final int INCORRECT_NUM_ARGS = 0;
-	    public static final int WRONG_LOGIN = 1;
-	    public static final int WRONG_TYPE = 2;
-	    public static final int NO_SUCH_USER = 3;
-	    public static final int WITHOUT_SKILLS = 4;
-	    public static final int DNI_INCORRECT_SIZE = 5;
+   
+	    public static final int WRONG_LOGIN = 0;
+	    public static final int WRONG_TYPE = 1;
+	    public static final int NO_SUCH_USER = 2;
+	    public static final int WITHOUT_SKILLS = 3;
+	    public static final int DNI_INCORRECT_SIZE = 4;
 	    public static final int DNI_INCORRECT_NUM = 6;
 	    public static final int ROOM_NUMBER_EXISTS = 7;
 	    public static final int WRONG_ROOM_NUM_FORMAT = 8;

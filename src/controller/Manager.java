@@ -3,6 +3,8 @@ package controller;
 
 
 import exceptions.VeterinariaException;
+import java.util.ArrayList;
+import java.util.List;
 import model.Usuarios;
 import persistence.HibernateQueries;
 
@@ -22,6 +24,35 @@ public class Manager {
         
         public Usuarios checkLogin(String matricula, String password) throws VeterinariaException{
            Usuarios user = HibernateQueries.getUser(matricula, password);
-            return user;
+           return user;
         }
+        
+        public void borrarUsuario(Usuarios usuario){
+            HibernateQueries.borrarUsuario(usuario);
+        }
+        
+        public void altaUsuario(Usuarios usuario){
+            HibernateQueries.altaUsuario(usuario);
+        }
+        
+        public void updateUsuario(Usuarios usuario){
+            HibernateQueries.updateUsuario(usuario);
+        }
+        
+        public String consultaUsuarios() throws VeterinariaException{
+            
+            List<Usuarios> usuarios = HibernateQueries.getUsers();
+            StringBuilder sb = new StringBuilder();
+            for(Usuarios u: usuarios){
+                sb.append(usuarioToString(u)+ "\n");
+            }
+            return sb.toString();
+        }
+        
+        public String usuarioToString(Usuarios u){
+            
+            return(u.getNombre() + " " +  u.getApellidos() + " "+ u.getDni() + " "+ u.getTipoUsuario());
+        }
+        
 }
+
