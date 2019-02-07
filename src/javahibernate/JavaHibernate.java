@@ -5,14 +5,18 @@
  */
 package javahibernate;
 
-import com.sun.xml.internal.bind.v2.runtime.output.SAXOutput;
+//import com.sun.xml.internal.bind.v2.runtime.output.SAXOutput;
 import controller.Manager;
 import exceptions.VeterinariaException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import model.Usuarios;
 import java.util.Date;
+import java.util.HashSet;
+import model.Expedientes;
 
 /**
  *
@@ -24,11 +28,12 @@ public class JavaHibernate {
     private static Manager manager;
     private static Usuarios usuarioLogueado;
     private static Usuarios admin;
-    private static Date date;
   
     
     public static void main(String[] args) {
        
+        
+        
         //tipos usuario: 
         //creación de un usuario administrador para empezar a usar la aplicación
         //cuando en la base de datos no hay administradores dados de alta
@@ -46,7 +51,7 @@ public class JavaHibernate {
                 System.out.println("*** Clinica Veterinaria STUCOM ***");
                 System.out.println("1. Iniciar sesion (TEST USE: admin, admin)");
                 System.out.println("0. Salir");
-                option = askInt("Opciones:");
+                option = inputMethods.askInt("Opciones:");
                 
                 switch (option) {
                     case 1:
@@ -67,31 +72,72 @@ public class JavaHibernate {
         }
     }
     
+    
+    public static void editarExpediente() throws VeterinariaException, IOException{
+        
+         System.out.println("*** EDITAR EXPEDIENTE ***\n");
+    }
+    
+    public static void consultaExpediente() throws VeterinariaException, IOException{
+        
+         System.out.println("*** CONSULTA EXPEDIENTES ***\n");
+    }
+    
+    
+    public static void bajaExpediente() throws VeterinariaException, IOException{
+        
+         System.out.println("*** BAJA EXPEDIENTE ***\n");
+    }
+    
+    public static void altaExpediente() throws VeterinariaException, IOException{
+        
+        System.out.println("*** ALTA EXPEDIENTE ***\n");
+        
+        
+        String nombre = inputMethods.askString("Nombre cliente");
+        String apellidos = inputMethods.askString("Apellidos cliente:");
+        String dni = manager.checkDNI(inputMethods.askString("DNI (sin letra, solo los numeros)"));
+        String cp = inputMethods.askString("Codigo postal:");
+        String matricula = inputMethods.askString("Matricula asignada (use tres cifras, ej: 298");
+        String telefono = inputMethods.askString("Telefono:");
+        int numeroMascotas = inputMethods.askInt("Numero de mascotas:");
+        
+        Expedientes nuevoExpediente = new Expedientes(usuarioLogueado, nombre, apellidos, dni, cp, new Date(), telefono, numeroMascotas);
+        nuevoExpediente.setId(2); //generarlo sistematicamente
+        manager.altaExpediente(nuevoExpediente);
+        System.out.println("Nuevo expediente dado de alta en el sistema");
+        
+    }
+    
    /**
     * Login: se pide un nº de matricula (el id del que se loguea) y su pass
     * Luego se evalua en base de datos si es correcto para permitir producir el logueo
+     * @throws exceptions.VeterinariaException
     */
    public static void login() throws VeterinariaException {
-     
-       String matricula = askString("Introduce matricula:");
-       String pass = askString("introduce password:");
+       
+       System.out.println("***  LOGIN ***\n");
+       
+       String matricula = inputMethods.askString("Introduce matricula:");
+       String pass = inputMethods.askString("introduce password:");
        if(matricula.equals("admin") && pass.equals("admin")){
            usuarioLogueado = admin;
-           menu3();
+           menus.menu3();
        }
        usuarioLogueado = manager.checkLogin(matricula, pass); 
+       manager.setUltimoAcceso(usuarioLogueado);
        System.out.println("Bienvenido, " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidos());
        System.out.println("\n");
        
        switch(usuarioLogueado.getTipoUsuario()){
            case 1:
-               menu1();
+               menus.menu1();
                break;
            case 2:
-               menu2();
+               menus.menu2();
                break;
            case 3:
-               menu3();
+               menus.menu3();
                break;
            default:
                throw new VeterinariaException(VeterinariaException.WRONG_TYPE);
@@ -101,7 +147,7 @@ public class JavaHibernate {
    public static void consultaUsuarios() throws VeterinariaException{
        
        System.out.println("***  USUARIOS EN EL SISTEMA ***\n");
-       System.out.println(manager.consultaUsuarios);
+       System.out.println(manager.consultaUsuarios());
        
    }
    
@@ -109,8 +155,8 @@ public class JavaHibernate {
        
        System.out.println("***  EDICION USUARIO ***\n");
        
-       String matricula = askString("Introduce matricula:");
-       String password = askString("Introduce password:");
+       String matricula = inputMethods.askString("Introduce matricula:");
+       String password = inputMethods.askString("Introduce password:");
        Usuarios usuarioModificar = manager.checkLogin(matricula, password);
        boolean exit = false;
        int option;
@@ -119,18 +165,18 @@ public class JavaHibernate {
        String nuevoPass;
        do{
          edicionOpcionesMenu(usuarioModificar);
-            option = askInt("Elige opcion:");
+            option = inputMethods.askInt("Elige opcion:");
             switch (option) {
                        case 1:
-                           nuevoNombre = askString("Nuevo nombre:");
+                           nuevoNombre = inputMethods.askString("Nuevo nombre:");
                            usuarioModificar.setNombre(nuevoNombre);
                            break;
                        case 2:
-                           nuevoApellido = askString("Nuevo apellido");
+                           nuevoApellido = inputMethods.askString("Nuevo apellido");
                            usuarioModificar.setApellidos(nuevoApellido);
                        case 3:
-                           nuevoPass = askString("Nuevo pass:");
-                           String nuevoPassConf = askString("Confirma pass:");
+                           nuevoPass = inputMethods.askString("Nuevo pass:");
+                           String nuevoPassConf = inputMethods.askString("Confirma pass:");
                            usuarioModificar.setPass(nuevoPass);
                        case 0:
                            break;
@@ -155,8 +201,8 @@ public class JavaHibernate {
    public static void bajaUsuario() throws VeterinariaException{
        
        System.out.println("*** BAJA DE USUARIO ***\n");
-       String matricula = askString("Introduce matricula:");
-       String password = askString("Introduce password:");
+       String matricula = inputMethods.askString("Introduce matricula:");
+       String password = inputMethods.askString("Introduce password:");
        Usuarios usuarioBorrar = manager.checkLogin(matricula, password);
        manager.borrarUsuario(usuarioBorrar);
        System.out.println("Usuario eliminado");
@@ -166,15 +212,16 @@ public class JavaHibernate {
       
     public static void altaUsuario() throws VeterinariaException, IOException{
         System.out.println("*** ALTA NUEVO USUARIO ***\n");
-        String nombre = askString("Nombre usuario");
-        String apellidos = askString("Apellidos:");
-        String dni = checkDNI(askString("DNI (sin letra, solo los numeros)"));
-        String matricula = askString("Matricula asignada (use tres cifras, ej: 298");
-        String password = askString("Password asignado:");
-        String passwordConf = askString("confirme password:");
-        int tipoUsuario = askInt("Tipo usuario: 1: auxiliar/ 2: veterinario / 3: admin");
+        String nombre = inputMethods.askString("Nombre usuario");
+        String apellidos = inputMethods.askString("Apellidos:");
+        String dni = manager.checkDNI(inputMethods.askString("DNI (sin letra, solo los numeros)"));
+        String matricula = inputMethods.askString("Matricula asignada (use tres cifras, ej: 298");
+        String password = inputMethods.askString("Password asignado:");
+        String passwordConf = inputMethods.askString("confirme password:");
+        int tipoUsuario = inputMethods.askInt("Tipo usuario: 1: auxiliar/ 2: veterinario / 3: admin");
         
-        Usuarios nuevoUsuario = new Usuarios(nombre, apellidos, dni, matricula, password, tipoUsuario, null, null);
+        Usuarios nuevoUsuario = new Usuarios(nombre, apellidos, dni, matricula, password, tipoUsuario, null, new HashSet());
+        nuevoUsuario.setId(3); //generarlo sistematicamente
         manager.altaUsuario(nuevoUsuario);
         System.out.println("Nuevo usuario dado de alta en el sistema");
         /*
@@ -185,201 +232,7 @@ public class JavaHibernate {
         */
     }
    
-    public static String checkDNI(String dn) throws VeterinariaException  {
-    	int dni;
-    	try {
-    		dni = Integer.parseInt(dn);
-      	    if(dn.length() != 8) {
-      		  throw new VeterinariaException(VeterinariaException.DNI_INCORRECT_SIZE);
-      	    }
-      	}catch(NumberFormatException e) {
-      		throw new VeterinariaException(VeterinariaException.DNI_INCORRECT_NUM);
-      	}
-    	return getDNIfull(dn);	
-    }
     
-     public static String getDNIfull(String dni) {
-        String characters="TRWAGMYFPDXBNJZSQVHLCKE";
-        int modulo= Integer.parseInt(dni) % 23;
-        char letra = characters.charAt(modulo);
-        return dni + letra; 
-        } 
     
-    private static void menu1(){
-        try {
-           
-            int option;
-            do {
-                 showMenu1();
-                option = askInt("Elige opcion:");
-                switch (option) {
-                    case 1:
-                        //consultaExpedientes();
-                        break;
-                    case 0:
-                        System.out.println("Hasta pronto...");
-                        break;
-                    default:
-                        System.out.println("Opcion incorrecta!");
-                }
-            } while (option != 0);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-        
-    }
-    private static void showMenu1() {
-        
-        System.out.println("*** Auxiliares ***");
-        System.out.println("1. Consulta expedientes");
-        System.out.println("0. Cerrar sesion");
-    }
-    
-     private static void menu2(){
-         try {
-            int option;
-            do {
-                showMenu2();
-                option = askInt("Elige opcion:");
-                switch (option) {
-                    case 1:
-                        //consultaExpedientes();
-                        break;
-                    case 2:
-                        //altaExpedientes();
-                        break;
-                    case 3:
-                        //editarExpediente();
-                        break;
-                    case 4:
-                        //bajaExpediente();
-                        break;
-                    case 0:
-                        System.out.println("Hasta pronto...");
-                        break;
-                    default:
-                        System.out.println("Opcion incorrecta!");
-                }
-            } while (option != 0);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-    
-    private static void showMenu2(){
-        System.out.println("*** Veterinarios ***");
-        System.out.println("1. Consulta expedientes");
-        System.out.println("2. Alta expediente");
-        System.out.println("3. Editar expediente");
-        System.out.println("4. Baja expediente");
-        System.out.println("0. Cerrar sesion");
-    }
-    
-     private static void menu3() {
-        try {
-            int option;
-            do {
-                showMenu3();
-                option = askInt("Elige opcion:");
-                switch (option) {
-                    case 1:
-                        //consultaExpedientes();
-                        break;
-                    case 2:
-                        //altaExpedientes();
-                        break;
-                    case 3:
-                        //editarExpediente();
-                        break;
-                    case 4:
-                        //bajaExpediente();
-                        break;
-                    case 5:
-                        consultaUsuarios();
-                        break;
-                    case 6:
-                        altaUsuario();
-                        break;
-                     case 7:
-                        editarUsuario(); 
-                        break;
-                     case 8:
-                        bajaUsuario();
-                        break;
-                    case 0:
-                        System.out.println("Hasta pronto...");
-                        break;
-                    default:
-                        System.out.println("Opcion incorrecta!");
-                }
-            } while (option != 0);
-        } catch (IOException | VeterinariaException ex ) {
-            System.out.println(ex.getMessage());
-        }
-    }
-    private static void showMenu3() {
-        System.out.println("*** Administradores ***");
-        System.out.println("1. Consulta expedientes");
-        System.out.println("2. Alta expediente");
-        System.out.println("3. Editar expediente");
-        System.out.println("4. Baja expediente");
-        System.out.println("5. Consulta usuarios");
-        System.out.println("6. Alta usuario");
-        System.out.println("7. Editar usuario");
-        System.out.println("8. Baja usuario");
-        System.out.println("0. Cerrar sesion");
-    }
-    
-    /**
-     * Request int
-     *
-     * @param message
-     * @return int
-     * @throws java.io.IOException
-     */
-    public static int askInt(String message) throws IOException, NumberFormatException {
-        br = new BufferedReader(new InputStreamReader(System.in));
-        int num = 0;
-        boolean error;
-        do {
-            try {
-                System.out.println(message);
-                num = Integer.parseInt(br.readLine());
-                error = false;
-            } catch (IOException ex) {
-                System.out.println("Error input / output.");
-                error = true;
-            } catch (NumberFormatException ex) {
-                System.out.println("Please, write integer number.");
-                error = true;
-            }
-        } while (error);
-        return num;
-    }
-    
-      /**
-     * Request String
-     *
-     * @param message
-     * @return String
-     */
-    public static String askString(String message) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String answer = "";
-        do {
-            try {
-                System.out.println(message);
-                answer = br.readLine();
-                if (answer.equals("")) {
-                    System.out.println("You must write something.");
-                }
-            } catch (IOException ex) {
-                System.out.println("Error input / output.");
-            }
-        } while (answer.equals(""));
-        return answer;
-    }
-
-   
     
 }
