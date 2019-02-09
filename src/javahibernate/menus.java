@@ -11,12 +11,16 @@ import static javahibernate.JavaHibernate.*;
 
 
 /**
- *
+ * 
  * @author MSI
  */
 public class menus {
     
-    public static void menu1(){
+    /**
+     * Menu de usuario Auxiliar
+     * @throws VeterinariaException 
+     */
+    public static void menu1() throws VeterinariaException{
         try {
            
             int option;
@@ -25,10 +29,11 @@ public class menus {
                 option = inputMethods.askInt("Elige opcion:");
                 switch (option) {
                     case 1:
-                        //consultaExpedientes();
+                        consultaExpediente();
                         break;
                     case 0:
                         System.out.println("Hasta pronto...");
+                        usuarioLogueado = null;
                         break;
                     default:
                         System.out.println("Opcion incorrecta!");
@@ -39,14 +44,22 @@ public class menus {
         }
         
     }
+    
+    /**
+     * Opciones menu de auxiliar
+     */
     public static void showMenu1() {
         
-        System.out.println("*** Auxiliares ***");
+        System.out.println("*** Auxiliares ***\n");
         System.out.println("1. Consulta expedientes");
         System.out.println("0. Cerrar sesion");
     }
     
-     public static void menu2(){
+    /**
+     * Menu de veterinarios
+     * @throws VeterinariaException 
+     */
+     public static void menu2() throws VeterinariaException{
          try {
             int option;
             do {
@@ -54,19 +67,20 @@ public class menus {
                 option = inputMethods.askInt("Elige opcion:");
                 switch (option) {
                     case 1:
-                        //consultaExpedientes();
+                        consultaExpediente();
                         break;
                     case 2:
-                        //altaExpedientes();
+                        altaExpediente();
                         break;
                     case 3:
-                        //editarExpediente();
+                        editarExpediente();
                         break;
                     case 4:
-                        //bajaExpediente();
+                        bajaExpediente();
                         break;
                     case 0:
                         System.out.println("Hasta pronto...");
+                        usuarioLogueado = null;
                         break;
                     default:
                         System.out.println("Opcion incorrecta!");
@@ -77,8 +91,11 @@ public class menus {
         }
     }
     
+    /**
+     * Opciones de menu de veterinarios
+     */
     public static void showMenu2(){
-        System.out.println("*** Veterinarios ***");
+        System.out.println("*** Veterinarios ***\n");
         System.out.println("1. Consulta expedientes");
         System.out.println("2. Alta expediente");
         System.out.println("3. Editar expediente");
@@ -86,6 +103,9 @@ public class menus {
         System.out.println("0. Cerrar sesion");
     }
     
+    /**
+     * Menu de administradores
+     */
      public static void menu3() {
         try {
             int option;
@@ -119,6 +139,7 @@ public class menus {
                         break;
                     case 0:
                         System.out.println("Hasta pronto...");
+                        usuarioLogueado = null;
                         break;
                     default:
                         System.out.println("Opcion incorrecta!");
@@ -128,8 +149,12 @@ public class menus {
             System.out.println(ex.getMessage());
         }
     }
+     
+     /**
+      * Opciones de menu de administradores
+      */
     public static void showMenu3() {
-        System.out.println("*** Administradores ***");
+        System.out.println("*** Administradores ***\n");
         System.out.println("1. Consulta expedientes");
         System.out.println("2. Alta expediente");
         System.out.println("3. Editar expediente");

@@ -8,6 +8,7 @@ package javahibernate;
 //import com.sun.xml.internal.bind.v2.runtime.output.SAXOutput;
 import controller.Manager;
 import exceptions.VeterinariaException;
+import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,29 +27,41 @@ public class JavaHibernate {
 
     private static BufferedReader br;
     private static Manager manager;
-    private static Usuarios usuarioLogueado;
-    private static Usuarios admin;
+    protected static Usuarios usuarioLogueado;
+    
   
     
     public static void main(String[] args) {
        
         
-        
+        manager = Manager.getInstance();
         //tipos usuario: 
         //creación de un usuario administrador para empezar a usar la aplicación
-        //cuando en la base de datos no hay administradores dados de alta
-        Usuarios admin = new Usuarios();
-        admin.setNombre("admin");
-        admin.setMatricula("admin");
-        admin.setPass("admin");
-        admin.setTipoUsuario(3);
+        //cuando en la base de datos no hay administradores dados de alta. Sus datos
+        //de login seran admin admin
+        Usuarios admin = null;
+        try{
+          admin = manager.checkLogin("admin", "admin");
+          
+        }catch(VeterinariaException e){
+            System.out.println(e.getMessage());
+        }
         
-        manager = Manager.getInstance();
+        if(admin == null){
+            admin.setNombre("admin");
+            admin.setMatricula("admin");
+            admin.setPass("admin");
+            admin.setTipoUsuario(3);
+            admin = new Usuarios("admin", "admin", "admin", "admin", "admin", 3, null, new HashSet(0));
+            manager.altaUsuario(admin);
+            System.out.println("Usuario admin creado en la base de datos");
+        }
+        
         try {
             int option = 0;
             do {
                try{
-                System.out.println("*** Clinica Veterinaria STUCOM ***");
+                System.out.println("*** Clinica Veterinaria STUCOM ***\n");
                 System.out.println("1. Iniciar sesion (TEST USE: admin, admin)");
                 System.out.println("0. Salir");
                 option = inputMethods.askInt("Opciones:");
@@ -73,22 +86,147 @@ public class JavaHibernate {
     }
     
     
+    /**
+     * Muestras los expedientes en el sistema y pide selecionar uno introduciendo el id numerico del mismo
+     * @param type String
+     * @return Expedientes
+     * @throws VeterinariaException
+     * @throws IOException 
+     */
+    public static Expedientes selectExpediente(String type) throws VeterinariaException, IOException{
+
+        int exp = 0;
+         boolean exists = true;
+         Expedientes expediente = null;
+         do{
+            exists = true;
+            manager.showExpedientes(); 
+            exp = inputMethods.askInt("Introduce ID del expediente a revisar");
+            expediente = manager.getExpediente(exp);
+            if(exp == 0){
+                exists = true;
+            }
+            if(expediente == null){
+              System.out.println("Ese ID no corresponde a ningun expediente. Intente de nuevo.");
+              exists = false;
+            }
+            else{
+              return expediente;
+            }
+         }while(!exists);
+       return null;  
+    }
+    
+    /**
+     * Edicion de expediente
+     * @throws VeterinariaException
+     * @throws IOException 
+     */
     public static void editarExpediente() throws VeterinariaException, IOException{
         
          System.out.println("*** EDITAR EXPEDIENTE ***\n");
+         
+         Expedientes expediente = selectExpediente("Introduce matricula del expediente a modificar");
+         manager.detailExpediente(expediente);
+         
+         boolean exit = false;
+         int option;
+         String nuevoNombre;
+         String nuevoApellido;
+         int nuevoDni;
+         int nuevoTelefono;
+         int nuevoCp;
+         int nuevoNumMascotas;
+         do{
+          edicionExpedienteOpcionesMenu(expediente);
+            option = inputMethods.askInt("Elige opcion:");
+            switch (option) {
+                       case 1:
+                           nuevoNombre = inputMethods.askString("Nuevo nombre:");
+                           expediente.setNombre(nuevoNombre);
+                           break;
+                       case 2:
+                           nuevoApellido = inputMethods.askString("Nuevo apellido");
+                           expediente.setApellidos(nuevoApellido);
+                           break;
+                       case 3:
+                           nuevoDni = inputMethods.askInt("Nuevo DNI (solo las cifras):");
+                           expediente.setDni(Integer.toString(nuevoDni));
+                           break;
+                       case 4:
+                           nuevoTelefono = inputMethods.askInt("Nuevo telefono");
+                           expediente.setTelefono(Integer.toString(nuevoTelefono));
+                           break;
+                       case 5:
+                           nuevoCp = inputMethods.askInt("Nuevo codigo postal");
+                           expediente.setCp(Integer.toString(nuevoCp));
+                           break;
+                       case 6:
+                           nuevoNumMascotas = inputMethods.askInt("Nuevo numero mascotas");
+                           expediente.setNMascotas(nuevoNumMascotas);
+                           break;
+                       case 0:
+                           break;
+                       default:
+                           System.out.println("Opcion incorrecta!");
+                   }   
+       }while(option != 0);
+       
+       manager.updateExpediente(expediente);
+       System.out.println("Expediente actualizado");
+         
     }
     
+    /**
+    * Seleccion del campo del expediente que se desea modificar
+    * @param u Expedientes
+    */
+   private static void edicionExpedienteOpcionesMenu(Expedientes e){
+       
+        System.out.println("*** Selecciona que modificar del expediente: ***");
+        System.out.println("\n");
+        System.out.println("1. Nombre ("+ e.getNombre()+")");
+        System.out.println("2. Apellidos ("+ e.getApellidos()+")");
+        System.out.println("4. Dni (" + e.getDni()+ ")");
+        System.out.println("5. CP: " + e.getCp()+ ")");
+        System.out.println("6. Telefono: " + e.getTelefono()+ ")");
+        System.out.println("7. Mascotas: " + e.getNMascotas()+ ")");
+        System.out.println("0. He terminado");
+    }
+   
+    /**
+     * Consulta de expediente
+     * @throws VeterinariaException
+     * @throws IOException 
+     */
     public static void consultaExpediente() throws VeterinariaException, IOException{
         
          System.out.println("*** CONSULTA EXPEDIENTES ***\n");
+         
+         Expedientes expediente = selectExpediente("Introduce matricula del expediente a revisar");
+         System.out.println(manager.detailExpediente(expediente));
     }
     
     
+    /**
+     * Baja de expediente
+     * @throws VeterinariaException
+     * @throws IOException 
+     */
     public static void bajaExpediente() throws VeterinariaException, IOException{
         
          System.out.println("*** BAJA EXPEDIENTE ***\n");
+         
+         Expedientes expediente = selectExpediente("Introduce matricula del expediente a eliminar");
+         manager.borrarExpediente(expediente);
+         System.out.println("Expediente eliminado");
     }
     
+    /**
+     * Nueva alta de expediente
+     * @throws VeterinariaException
+     * @throws IOException 
+     */
     public static void altaExpediente() throws VeterinariaException, IOException{
         
         System.out.println("*** ALTA EXPEDIENTE ***\n");
@@ -98,7 +236,6 @@ public class JavaHibernate {
         String apellidos = inputMethods.askString("Apellidos cliente:");
         String dni = manager.checkDNI(inputMethods.askString("DNI (sin letra, solo los numeros)"));
         String cp = inputMethods.askString("Codigo postal:");
-        String matricula = inputMethods.askString("Matricula asignada (use tres cifras, ej: 298");
         String telefono = inputMethods.askString("Telefono:");
         int numeroMascotas = inputMethods.askInt("Numero de mascotas:");
         
@@ -120,10 +257,6 @@ public class JavaHibernate {
        
        String matricula = inputMethods.askString("Introduce matricula:");
        String pass = inputMethods.askString("introduce password:");
-       if(matricula.equals("admin") && pass.equals("admin")){
-           usuarioLogueado = admin;
-           menus.menu3();
-       }
        usuarioLogueado = manager.checkLogin(matricula, pass); 
        manager.setUltimoAcceso(usuarioLogueado);
        System.out.println("Bienvenido, " + usuarioLogueado.getNombre() + " " + usuarioLogueado.getApellidos());
@@ -144,6 +277,10 @@ public class JavaHibernate {
        }
     }
    
+   /**
+    * Muestra los usuarios en el sistema
+    * @throws VeterinariaException 
+    */
    public static void consultaUsuarios() throws VeterinariaException{
        
        System.out.println("***  USUARIOS EN EL SISTEMA ***\n");
@@ -151,6 +288,11 @@ public class JavaHibernate {
        
    }
    
+   /**
+    * Edicion de usuario
+    * @throws VeterinariaException
+    * @throws IOException 
+    */
    public static void editarUsuario() throws VeterinariaException, IOException{
        
        System.out.println("***  EDICION USUARIO ***\n");
@@ -190,14 +332,22 @@ public class JavaHibernate {
        
    }
    
+   /**
+    * Seleccion del campo del usuario que se desea modificar
+    * @param u Usuarios
+    */
    private static void edicionOpcionesMenu(Usuarios u){
         System.out.println("*** Selecciona que modificar: ***");
         System.out.println("1. Nombre ("+ u.getNombre()+")");
         System.out.println("2. Apellidos (" + u.getApellidos()+")");
         System.out.println("3. Password (" + u.getPass()+")");
-        System.out.println("0. Salir");
+        System.out.println("0. He terminado");
     }
    
+   /**
+    * Baja de un usuario
+    * @throws VeterinariaException 
+    */
    public static void bajaUsuario() throws VeterinariaException{
        
        System.out.println("*** BAJA DE USUARIO ***\n");
@@ -209,7 +359,11 @@ public class JavaHibernate {
    }
    
    
-      
+    /**
+     * Alta de un nuevo usuario
+     * @throws VeterinariaException
+     * @throws IOException 
+     */
     public static void altaUsuario() throws VeterinariaException, IOException{
         System.out.println("*** ALTA NUEVO USUARIO ***\n");
         String nombre = inputMethods.askString("Nombre usuario");

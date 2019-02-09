@@ -3,7 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/nbproject/build-impl.xml</file>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/javahibernate/menus.java</file>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/model/Usuarios.java</file>
             <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/javahibernate/JavaHibernate.java</file>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/controller/Manager.java</file>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/javahibernate/inputMethods.java</file>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/exceptions/VeterinariaException.java</file>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/model/Expedientes.java</file>
+            <file>file:/C:/Users/MSI/Documents/NetBeansProjects/Java---Veterinaria/src/persistence/HibernateQueries.java</file>
         </group>
     </open-files>
 </project-private>

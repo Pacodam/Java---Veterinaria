@@ -23,8 +23,9 @@ public class VeterinariaException extends Exception{
 	    public static final int DNI_INCORRECT_NUM = 6;
 	    public static final int ROOM_NUMBER_EXISTS = 7;
 	    public static final int WRONG_ROOM_NUM_FORMAT = 8;
+            
 	    public static final int NO_EXPEDIENTS = 9;
-	    public static final int NO_ROOMS = 10;
+	    public static final int NO_EXPEDIENT = 10;
 	    public static final int DUPLICATE_WORKER = 11;
 	    public static final int NO_SUCH_ROOM = 12;
 	    public static final int NOBODY_ON_ROOM = 13;
@@ -47,7 +48,7 @@ public class VeterinariaException extends Exception{
 	            "<ERROR 008 : A room with that number already exists>",
 	            "<ERROR 009 : The room number must have 3 digits>",
 	            "<ERROR 010 : No existen expedientes en la base de datos>",
-	            "<ERROR 011 : The hotel has no rooms yet>",
+	            "<ERROR 011 : El ID introducido no corresponde a ningun expediente existente>",
                     "<ERROR 012 : There is another worker with that DNI>",
                     "<ERROR 013 : Wrong room number. No such number found>",
                     "<ERROR 014 : No customers found on that room>",
