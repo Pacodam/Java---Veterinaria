@@ -14,51 +14,32 @@ import java.util.List;
  */
 public class VeterinariaException extends Exception{
     
-   
-	    public static final int WRONG_LOGIN = 0;
-	    public static final int WRONG_TYPE = 1;
-	    public static final int NO_SUCH_USER = 2;
-	    public static final int WITHOUT_SKILLS = 3;
-	    public static final int DNI_INCORRECT_SIZE = 4;
-	    public static final int DNI_INCORRECT_NUM = 6;
-	    public static final int ROOM_NUMBER_EXISTS = 7;
-	    public static final int WRONG_ROOM_NUM_FORMAT = 8;
-            
-	    public static final int NO_EXPEDIENTS = 9;
-	    public static final int NO_EXPEDIENT = 10;
-	    public static final int DUPLICATE_WORKER = 11;
-	    public static final int NO_SUCH_ROOM = 12;
-	    public static final int NOBODY_ON_ROOM = 13;
-	    public static final int MILIS_NUMERIC = 14;
-	    public static final int DUPLICATE_CUSTOMER = 15;
-	    public static final int INCORRECT_MONEY = 16;
-	    public static final int INCORRECT_BROKEN_SERVICES = 17;
-	    public static final int NUM_13 = 18;
+            public static final int NO_SUCH_USER = 0;
+            public static final int DNI_INCORRECT_SIZE = 1;
+	    public static final int DNI_INCORRECT_NUM = 2;
+            public static final int MATRICULA_SIZE = 3;
+            public static final int MATRICULA_U_EXISTS = 4;
+            public static final int PASS_CONFIRM = 5;
+            public static final int WRONG_TYPE = 6;
+            public static final int NO_EXPEDIENTS = 7;
+            public static final int NO_USERS = 8;
+	    public static final int NO_EXPEDIENT = 9;
+	   
 	    
 	    private int code;
 	    
 	    private final List<String> messages = Arrays.asList(
-	            "<ERROR 001 : Matricula o pass inválidos/no corresponden a nadie>",
-	            "<ERROR 002 : Identificador para tipo usuario no reconocido. Solo 1,2,3 se admiten. Revise base de datos.>",
-	            "<ERROR 003 : No hay ningun usuario que corresponda a esa matricula y password. Asegurese e intente de nuevo>",
-	            "<ERROR 004 : Skill for worker not recognized>",
-	            "<ERROR 005 : This worker has no skills>",
-	            "<ERROR 006 : Problem with DNI: incorrect size>",
-	            "<ERROR 007 : Problem with DNI: only numbers accepted>",
-	            "<ERROR 008 : A room with that number already exists>",
-	            "<ERROR 009 : The room number must have 3 digits>",
-	            "<ERROR 010 : No existen expedientes en la base de datos>",
-	            "<ERROR 011 : El ID introducido no corresponde a ningun expediente existente>",
-                    "<ERROR 012 : There is another worker with that DNI>",
-                    "<ERROR 013 : Wrong room number. No such number found>",
-                    "<ERROR 014 : No customers found on that room>",
-                    "<ERROR 015 : Miliseconds must be a number!>",
-                    "<ERROR 016 : There is another customer with that DNI>",
-                    "<ERROR 017 : Money error. Must be of format XXXE, whith X = number>",
-                    "<ERROR 018 : Incorrect broken services for this room. Check.>",
-                    "<ERROR 019 : Number 13 not allowed for room number>",
-                    "<ERROR 016 : >"
-			    );
+                    "<ERROR 001 : No hay ningun usuario que corresponda a esa matricula y password. Asegurese e intente de nuevo>",
+	            "<ERROR 002 : El DNI debe tener 8 cifras>",
+	            "<ERROR 003 : El DNI no puede contener caracteres no numericos>",
+                    "<ERROR 004 : La matricula debe tener 3 caracteres>",
+                    "<ERROR 005 : Ya existe otro usuario con esa matricula>",
+	            "<ERROR 006 : El segundo password no es correcto>",
+                    "<ERROR 007 : Identificador para tipo usuario no reconocido. Solo 1,2,3 se admiten>",
+                    "<ERROR 008 : No existen expedientes en la base de datos>",
+                    "<ERROR 009 : No existen usuarios en la base de datos>",
+                    "<ERROR 010 : El ID introducido no corresponde a ningun expediente existente>"
+	   );
 	    
 	           
 	            

@@ -20,11 +20,12 @@ public class menus {
      * Menu de usuario Auxiliar
      * @throws VeterinariaException 
      */
-    public static void menu1() throws VeterinariaException{
+    public static void menu1() {
         try {
            
-            int option;
+            int option = 0;
             do {
+              try{
                  showMenu1();
                 option = inputMethods.askInt("Elige opcion:");
                 switch (option) {
@@ -38,6 +39,9 @@ public class menus {
                     default:
                         System.out.println("Opcion incorrecta!");
                 }
+              }catch(VeterinariaException e){
+                  System.out.println(e.getMessage());
+              }
             } while (option != 0);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -59,10 +63,11 @@ public class menus {
      * Menu de veterinarios
      * @throws VeterinariaException 
      */
-     public static void menu2() throws VeterinariaException{
+     public static void menu2() {
          try {
-            int option;
+            int option = 0;
             do {
+              try{
                 showMenu2();
                 option = inputMethods.askInt("Elige opcion:");
                 switch (option) {
@@ -85,6 +90,9 @@ public class menus {
                     default:
                         System.out.println("Opcion incorrecta!");
                 }
+               }catch(VeterinariaException e){
+                  System.out.println(e.getMessage());
+              }
             } while (option != 0);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -108,8 +116,9 @@ public class menus {
      */
      public static void menu3() {
         try {
-            int option;
+            int option = 0;
             do {
+               try{
                 showMenu3();
                 option = inputMethods.askInt("Elige opcion:");
                 switch (option) {
@@ -144,9 +153,12 @@ public class menus {
                     default:
                         System.out.println("Opcion incorrecta!");
                 }
+                }catch(VeterinariaException e){
+                  System.out.println(e.getMessage());
+              }
             } while (option != 0);
-        } catch (IOException | VeterinariaException ex ) {
-            System.out.println(ex.getMessage());
+        } catch (IOException e ) {
+            System.out.println(e.getMessage());
         }
     }
      

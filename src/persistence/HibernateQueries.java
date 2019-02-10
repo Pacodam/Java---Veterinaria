@@ -198,10 +198,36 @@ public class HibernateQueries {
          List<Usuarios> lista = crit.list();
          sesion.close();
          if(lista.isEmpty()){
-             throw new VeterinariaException(VeterinariaException.NO_SUCH_USER);
+             throw new VeterinariaException(VeterinariaException.NO_USERS);
          }
          return lista;
      }
+    
+    public static boolean existsAdmin() {
+        Session sesion = HibernateUtil.createSessionFactory().openSession();
+        Criteria crit = sesion.createCriteria(Usuarios.class);
+        crit.add(Restrictions.eq("matricula", "admin"));
+        crit.add(Restrictions.eq("pass", "admin"));
+        List<Usuarios> lista = crit.list();
+        sesion.close();
+        if(lista.isEmpty()){
+            return false;
+         }
+        return true;
+    }
+    
+    public static void checkMatriculaU(String matricula) throws VeterinariaException{
+        Session sesion = HibernateUtil.createSessionFactory().openSession();
+        Criteria crit = sesion.createCriteria(Usuarios.class);
+        crit.add(Restrictions.eq("matricula", matricula));
+        List<Usuarios> lista = crit.list();
+        sesion.close();
+        if(!lista.isEmpty()){
+            throw new VeterinariaException(VeterinariaException.MATRICULA_U_EXISTS);
+         }
+        
+    }
 
+    
      
 }

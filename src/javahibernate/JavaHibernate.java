@@ -8,15 +8,15 @@ package javahibernate;
 //import com.sun.xml.internal.bind.v2.runtime.output.SAXOutput;
 import controller.Manager;
 import exceptions.VeterinariaException;
-import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import model.Usuarios;
 import java.util.Date;
 import java.util.HashSet;
+import static javahibernate.inputMethods.dni;
+import static javahibernate.inputMethods.matriculaUser;
+import static javahibernate.inputMethods.password;
+import static javahibernate.inputMethods.tipoUsuario;
 import model.Expedientes;
 
 /**
@@ -35,28 +35,17 @@ public class JavaHibernate {
        
         
         manager = Manager.getInstance();
-        //tipos usuario: 
-        //creación de un usuario administrador para empezar a usar la aplicación
-        //cuando en la base de datos no hay administradores dados de alta. Sus datos
-        //de login seran admin admin
+        
+        //se verifica si en base de datos hay un usuario admin admin, si no se crea.
         Usuarios admin = null;
-        try{
-          admin = manager.checkLogin("admin", "admin");
-          
-        }catch(VeterinariaException e){
-            System.out.println(e.getMessage());
+        if(!manager.existsAdmin()){
+            manager.createAdmin();
+            System.out.println("Creado usuario para acceso: matricula 'admin' y pass 'admin'");
         }
-        
-        if(admin == null){
-            admin.setNombre("admin");
-            admin.setMatricula("admin");
-            admin.setPass("admin");
-            admin.setTipoUsuario(3);
-            admin = new Usuarios("admin", "admin", "admin", "admin", "admin", 3, null, new HashSet(0));
-            manager.altaUsuario(admin);
-            System.out.println("Usuario admin creado en la base de datos");
+        else{
+            System.out.println("Usuario para acceso: matricula 'admin' y pass 'admin'");
         }
-        
+       
         try {
             int option = 0;
             do {
@@ -88,6 +77,7 @@ public class JavaHibernate {
     
     /**
      * Muestras los expedientes en el sistema y pide selecionar uno introduciendo el id numerico del mismo
+     * si ninguno corresponde a ese id introducido se lanzará una excepción
      * @param type String
      * @return Expedientes
      * @throws VeterinariaException
@@ -104,7 +94,7 @@ public class JavaHibernate {
             exp = inputMethods.askInt("Introduce ID del expediente a revisar");
             expediente = manager.getExpediente(exp);
             if(exp == 0){
-                exists = true;
+                break;
             }
             if(expediente == null){
               System.out.println("Ese ID no corresponde a ningun expediente. Intente de nuevo.");
@@ -126,55 +116,57 @@ public class JavaHibernate {
         
          System.out.println("*** EDITAR EXPEDIENTE ***\n");
          
-         Expedientes expediente = selectExpediente("Introduce matricula del expediente a modificar");
-         manager.detailExpediente(expediente);
+         Expedientes expediente = selectExpediente("Introduce ID del expediente a modificar");
+         if(expediente != null){
          
-         boolean exit = false;
-         int option;
-         String nuevoNombre;
-         String nuevoApellido;
-         int nuevoDni;
-         int nuevoTelefono;
-         int nuevoCp;
-         int nuevoNumMascotas;
-         do{
-          edicionExpedienteOpcionesMenu(expediente);
-            option = inputMethods.askInt("Elige opcion:");
-            switch (option) {
-                       case 1:
-                           nuevoNombre = inputMethods.askString("Nuevo nombre:");
-                           expediente.setNombre(nuevoNombre);
-                           break;
-                       case 2:
-                           nuevoApellido = inputMethods.askString("Nuevo apellido");
-                           expediente.setApellidos(nuevoApellido);
-                           break;
-                       case 3:
-                           nuevoDni = inputMethods.askInt("Nuevo DNI (solo las cifras):");
-                           expediente.setDni(Integer.toString(nuevoDni));
-                           break;
-                       case 4:
-                           nuevoTelefono = inputMethods.askInt("Nuevo telefono");
-                           expediente.setTelefono(Integer.toString(nuevoTelefono));
-                           break;
-                       case 5:
-                           nuevoCp = inputMethods.askInt("Nuevo codigo postal");
-                           expediente.setCp(Integer.toString(nuevoCp));
-                           break;
-                       case 6:
-                           nuevoNumMascotas = inputMethods.askInt("Nuevo numero mascotas");
-                           expediente.setNMascotas(nuevoNumMascotas);
-                           break;
-                       case 0:
-                           break;
-                       default:
-                           System.out.println("Opcion incorrecta!");
-                   }   
-       }while(option != 0);
-       
-       manager.updateExpediente(expediente);
-       System.out.println("Expediente actualizado");
-         
+            manager.detailExpediente(expediente);
+
+            boolean exit = false;
+            int option;
+            String nuevoNombre;
+            String nuevoApellido;
+            String nuevoDni;
+            int nuevoTelefono;
+            int nuevoCp;
+            int nuevoNumMascotas;
+            do{
+             edicionExpedienteOpcionesMenu(expediente);
+               option = inputMethods.askInt("Elige opcion:");
+               switch (option) {
+                          case 1:
+                              nuevoNombre = inputMethods.askString("Nuevo nombre:");
+                              expediente.setNombre(nuevoNombre);
+                              break;
+                          case 2:
+                              nuevoApellido = inputMethods.askString("Nuevo apellido");
+                              expediente.setApellidos(nuevoApellido);
+                              break;
+                          case 3:
+                              nuevoDni = dni();
+                              expediente.setDni(nuevoDni);
+                              break;
+                          case 4:
+                              nuevoTelefono = inputMethods.askInt("Nuevo telefono");
+                              expediente.setTelefono(Integer.toString(nuevoTelefono));
+                              break;
+                          case 5:
+                              nuevoCp = inputMethods.askInt("Nuevo codigo postal");
+                              expediente.setCp(Integer.toString(nuevoCp));
+                              break;
+                          case 6:
+                              nuevoNumMascotas = inputMethods.askInt("Nuevo numero mascotas");
+                              expediente.setNMascotas(nuevoNumMascotas);
+                              break;
+                          case 0:
+                              break;
+                          default:
+                              System.out.println("Opcion incorrecta!");
+                      }   
+          }while(option != 0);
+
+          manager.updateExpediente(expediente);
+          System.out.println("Expediente actualizado");
+         }
     }
     
     /**
@@ -187,10 +179,10 @@ public class JavaHibernate {
         System.out.println("\n");
         System.out.println("1. Nombre ("+ e.getNombre()+")");
         System.out.println("2. Apellidos ("+ e.getApellidos()+")");
-        System.out.println("4. Dni (" + e.getDni()+ ")");
-        System.out.println("5. CP: " + e.getCp()+ ")");
-        System.out.println("6. Telefono: " + e.getTelefono()+ ")");
-        System.out.println("7. Mascotas: " + e.getNMascotas()+ ")");
+        System.out.println("3. Dni (" + e.getDni()+ ")");
+        System.out.println("4. Telefono (" + e.getTelefono()+ ")");
+        System.out.println("5. CP (" + e.getCp()+ ")");
+        System.out.println("6. Mascotas (" + e.getNMascotas()+ ")");
         System.out.println("0. He terminado");
     }
    
@@ -204,7 +196,9 @@ public class JavaHibernate {
          System.out.println("*** CONSULTA EXPEDIENTES ***\n");
          
          Expedientes expediente = selectExpediente("Introduce matricula del expediente a revisar");
-         System.out.println(manager.detailExpediente(expediente));
+         if(expediente != null){
+           System.out.println(manager.detailExpediente(expediente));
+         }
     }
     
     
@@ -218,8 +212,10 @@ public class JavaHibernate {
          System.out.println("*** BAJA EXPEDIENTE ***\n");
          
          Expedientes expediente = selectExpediente("Introduce matricula del expediente a eliminar");
-         manager.borrarExpediente(expediente);
-         System.out.println("Expediente eliminado");
+         if(expediente != null){
+           manager.borrarExpediente(expediente);
+           System.out.println("Expediente eliminado");
+         }
     }
     
     /**
@@ -231,16 +227,14 @@ public class JavaHibernate {
         
         System.out.println("*** ALTA EXPEDIENTE ***\n");
         
-        
         String nombre = inputMethods.askString("Nombre cliente");
         String apellidos = inputMethods.askString("Apellidos cliente:");
-        String dni = manager.checkDNI(inputMethods.askString("DNI (sin letra, solo los numeros)"));
+        String dni = dni();
         String cp = inputMethods.askString("Codigo postal:");
         String telefono = inputMethods.askString("Telefono:");
         int numeroMascotas = inputMethods.askInt("Numero de mascotas:");
         
         Expedientes nuevoExpediente = new Expedientes(usuarioLogueado, nombre, apellidos, dni, cp, new Date(), telefono, numeroMascotas);
-        nuevoExpediente.setId(2); //generarlo sistematicamente
         manager.altaExpediente(nuevoExpediente);
         System.out.println("Nuevo expediente dado de alta en el sistema");
         
@@ -317,8 +311,7 @@ public class JavaHibernate {
                            nuevoApellido = inputMethods.askString("Nuevo apellido");
                            usuarioModificar.setApellidos(nuevoApellido);
                        case 3:
-                           nuevoPass = inputMethods.askString("Nuevo pass:");
-                           String nuevoPassConf = inputMethods.askString("Confirma pass:");
+                           nuevoPass = password();
                            usuarioModificar.setPass(nuevoPass);
                        case 0:
                            break;
@@ -368,14 +361,13 @@ public class JavaHibernate {
         System.out.println("*** ALTA NUEVO USUARIO ***\n");
         String nombre = inputMethods.askString("Nombre usuario");
         String apellidos = inputMethods.askString("Apellidos:");
-        String dni = manager.checkDNI(inputMethods.askString("DNI (sin letra, solo los numeros)"));
-        String matricula = inputMethods.askString("Matricula asignada (use tres cifras, ej: 298");
-        String password = inputMethods.askString("Password asignado:");
-        String passwordConf = inputMethods.askString("confirme password:");
-        int tipoUsuario = inputMethods.askInt("Tipo usuario: 1: auxiliar/ 2: veterinario / 3: admin");
+        String dni = dni();
+        String matricula = matriculaUser();
+        String password = password();
+        int tipoUsuario = tipoUsuario();
         
         Usuarios nuevoUsuario = new Usuarios(nombre, apellidos, dni, matricula, password, tipoUsuario, null, new HashSet());
-        nuevoUsuario.setId(3); //generarlo sistematicamente
+        //nuevoUsuario.setId(3); //generarlo sistematicamente
         manager.altaUsuario(nuevoUsuario);
         System.out.println("Nuevo usuario dado de alta en el sistema");
         /*

@@ -5,6 +5,7 @@ package controller;
 import exceptions.VeterinariaException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import model.Expedientes;
 import model.Usuarios;
@@ -180,8 +181,8 @@ public class Manager {
         public static String usuarioToString(Usuarios u){
             
             String tipoUsuario = tipoUsuario(u.getTipoUsuario());
-            return("Nombre: " + u.getNombre() + "  Apellidos: " +  u.getApellidos() + " DNI: "+ u.getDni() +
-                    " Tipo: "+ tipoUsuario + " Matricula: " + u.getMatricula() + " Password: " + u.getPass());
+            return("Nombre: " + u.getNombre() + "| Apellidos: " +  u.getApellidos() + "| DNI: "+ u.getDni() +
+                    "| Tipo: "+ tipoUsuario + "| Matricula: " + u.getMatricula() + "| Password: " + u.getPass());
         }
         
         /**
@@ -199,6 +200,12 @@ public class Manager {
             }
             return tipoUsuario;
         }
+        
+        public void checkMatriculaU(String matricula) throws VeterinariaException{
+            HibernateQueries.checkMatriculaU(matricula);
+        }
+        
+        
         
         /**
          * Controla que el formato de dni sea correcto. Lo devuelve con su letra correspondiente.
@@ -230,6 +237,22 @@ public class Manager {
         char letra = characters.charAt(modulo);
         return dni + letra; 
         } 
+     
+     public boolean existsAdmin(){
+         return HibernateQueries.existsAdmin();
+     }
+     
+     public void createAdmin() {
+            Usuarios admin = new Usuarios();
+            admin.setNombre("admin");
+            admin.setMatricula("admin");
+            admin.setPass("admin");
+            admin.setTipoUsuario(3);
+            admin = new Usuarios("admin", "admin", "admin", "admin", "admin", 3, null, new HashSet(0));
+            HibernateQueries.altaUsuario(admin);
+            
+      }
+     
         
 }
 
